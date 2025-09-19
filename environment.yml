@@ -1,0 +1,12 @@
+name: flask-rest-api-env        # 环境名称
+channels:
+  - conda-forge           # 首选频道，社区维护，包最全
+  - defaults              # 默认频道
+dependencies:
+  - python=3.9.6           # 指定 Python 版本
+  - flask=2.3             # Web 框架
+  - flask-restful=0.3.10  # RESTful API 扩展
+  - pip                   # 包含 pip 以便安装其他包
+  - pip:                  # 使用 pip 安装的包列表
+    - flask-cors          # 可选：处理跨域请求
+    - python-dotenv       # 可选：环境变量管理
