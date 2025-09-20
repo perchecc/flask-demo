@@ -1,5 +1,9 @@
-flask==2.3
-flask-restful==0.3.10
-flask-cors
-python-dotenv
-gunicorn>=21.0
+# FastAPI 核心框架（匹配原有版本）
+fastapi==0.104.1
+# 异步 ASGI 服务器（匹配原有版本，standard 包含额外功能）
+uvicorn[standard]==0.24.0
+# Excel 文件处理（openpyxl 用于读写 .xlsx 文件）
+openpyxl==3.1.2
+# 处理文件上传的依赖（FastAPI 接收文件需此包）
+python-multipart==0.0.6
+# 正则表达式处理（用于文本标准化，Python 标准库已包含，无需额外安装）

@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工时统计文件上传</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        :root {
+            --primary: #3B82F6;
+            --primary-hover: #2563eb;
+            --primary-light: #dbeafe;
+            --secondary: #10B981;
+            --secondary-hover: #059669;
+            --neutral: #64748B;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --red-50: #fef2f2;
+            --red-600: #dc2626;
+            --white: #ffffff;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 4px 8px -2px rgba(0, 0, 0, 0.1);
+            --radius: 0.5rem;
+            --radius-lg: 0.75rem;
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--gray-50);
+            color: var(--gray-800);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 42rem;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            flex-grow: 1;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--gray-800);
+        }
+        
+        .header-desc {
+            color: var(--neutral);
+        }
+        
+        main {
+            background-color: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .upload-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+        
+        .icon {
+            width: 1rem;
+            height: 1rem;
+            display: inline-block;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+        
+        .drop-area {
+            display: flex;
+            justify-content: center;
+            padding: 1.25rem 1.5rem;
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--radius);
+            transition: var(--transition);
+            margin-top: 0.25rem;
+        }
+        
+        .drop-area:hover {
+            background-color: var(--gray-50);
+        }
+        
+        .drop-area.highlight {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+        }
+        
+        .drop-content {
+            text-align: center;
+            width: 100%;
+        }
+        
+        .file-icon {
+            width: 3rem;
+            height: 3rem;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+        
+        .file-input-label {
+            color: var(--primary);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .file-input-label:hover {
+            color: var(--primary-hover);
+        }
+        
+        input[type="file"] {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+        
+        .file-hint {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+        
+        .file-name {
+            font-size: 0.75rem;
+            color: var(--gray-600);
+            margin-top: 0.5rem;
+            display: none;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background-color: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 0.5rem;
+        }
+        
+        .submit-btn:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        .submit-btn:disabled {
+            background-color: var(--gray-300);
+            color: var(--gray-500);
+            cursor: not-allowed;
+        }
+        
+        .spinner {
+            width: 1rem;
+            height: 1rem;
+            margin-left: 0.5rem;
+            display: none;
+        }
+        
+        .spinner circle {
+            fill: none;
+            stroke: currentColor;
+            stroke-linecap: round;
+            stroke-width: 2.5;
+            stroke-dasharray: 1, 150;
+            stroke-dashoffset: 0;
+            animation: rotate 1s linear infinite;
+        }
+        
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .result-area {
+            background-color: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+        
+        .result-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .success-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            color: var(--secondary);
+            margin-right: 0.5rem;
+        }
+        
+        .success-message {
+            margin-bottom: 1rem;
+            color: var(--gray-700);
+        }
+        
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background-color: var(--secondary);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+        
+        .download-btn:hover {
+            background-color: var(--secondary-hover);
+        }
+        
+        .download-icon {
+            width: 1rem;
+            height: 1rem;
+            margin-right: 0.5rem;
+        }
+        
+        .error-message {
+            color: var(--red-600);
+            padding: 1rem;
+            background-color: var(--red-50);
+            border-radius: var(--radius);
+            display: none;
+            align-items: center;
+        }
+        
+        .error-icon {
+            width: 1rem;
+            height: 1rem;
+            margin-right: 0.5rem;
+            flex-shrink: 0;
+        }
+        
+        footer {
+            background-color: var(--gray-100);
+            padding: 1rem;
+            text-align: center;
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
+        
+        .info-box {
+            background-color: var(--primary-light);
+            border-left: 4px solid var(--primary);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 4px;
+        }
+        
+        .info-title {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        
+        .info-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.5rem;
+        }
+        
+        @media (max-width: 640px) {
+            .container {
+                padding: 1rem 0.5rem;
+            }
+            
+            main, .result-area {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>工时统计文件上传</h1>
+            <p class="header-desc">上传原始工时文件，获取统计结果</p>
+        </header>
+
+        <main>
+            <div class="info-box">
+                <div class="info-title">
+                    <svg class="info-icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd"/>
+                    </svg>
+                    系统提示
+                </div>
+                <p>系统已自动加载当前目录下的员工清单文件，您只需上传原始工时文件即可。</p>
+            </div>
+
+            <form id="uploadForm" class="upload-form">
+                <!-- 原始工时文件上传 -->
+                <div class="upload-section">
+                    <label class="section-label">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/>
+                        </svg>
+                        原始工时文件
+                    </label>
+                    <div class="drop-area" id="rawDropArea">
+                        <div class="drop-content">
+                            <svg class="file-icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/>
+                            </svg>
+                            <div>
+                                <label for="rawFile" class="file-input-label">选择Excel文件</label>
+                                <span>或拖放文件到此处</span>
+                            </div>
+                            <p class="file-hint">支持 .xlsx, .xls 格式</p>
+                            <p id="rawFileName" class="file-name"></p>
+                        </div>
+                    </div>
+                    <input id="rawFile" name="raw_file" type="file" accept=".xlsx, .xls" required>
+                </div>
+
+                <!-- 提交按钮 -->
+                <button type="submit" id="submitBtn" class="submit-btn">
+                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+                    </svg>
+                    <span>处理并导出结果</span>
+                    <svg class="spinner" viewBox="0 0 20 20">
+                        <circle cx="10" cy="10" r="8"></circle>
+                    </svg>
+                </button>
+            </form>
+        </main>
+
+        <!-- 结果区域 -->
+        <div id="resultArea" class="result-area">
+            <h2 class="result-title">
+                <svg class="success-icon" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+                处理结果
+            </h2>
+            <div id="successMessage">
+                <p class="success-message">文件处理成功，点击下方按钮下载结果：</p>
+                <a id="downloadLink" href="#" class="download-btn">
+                    <svg class="download-icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                    下载工时统计结果
+                </a>
+            </div>
+            <div id="errorMessage" class="error-message">
+                <svg class="error-icon" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+                <span id="errorText"></span>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>工时统计系统 &copy; 2023</p>
+    </footer>
+
+    <script>
+        // API地址 - 已设置为你的服务器地址
+        const API_URL = 'http://129.28.77.200:8888/process-timesheet';
+        
+        // 获取DOM元素
+        const uploadForm = document.getElementById('uploadForm');
+        const rawFileInput = document.getElementById('rawFile');
+        const rawFileName = document.getElementById('rawFileName');
+        const submitBtn = document.getElementById('submitBtn');
+        const loadingSpinner = document.querySelector('.spinner');
+        const resultArea = document.getElementById('resultArea');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        const downloadLink = document.getElementById('downloadLink');
+        const rawDropArea = document.getElementById('rawDropArea');
+
+        // 显示选中的文件名
+        rawFileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                rawFileName.textContent = `已选择: ${e.target.files[0].name}`;
+                rawFileName.style.display = 'block';
+            } else {
+                rawFileName.style.display = 'none';
+            }
+        });
+
+        // 拖放功能
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            rawDropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            rawDropArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            rawDropArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            rawDropArea.classList.add('highlight');
+        }
+
+        function unhighlight() {
+            rawDropArea.classList.remove('highlight');
+        }
+
+        rawDropArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length > 0 && (files[0].type.includes('excel') || 
+                files[0].name.endsWith('.xlsx') || files[0].name.endsWith('.xls'))) {
+                rawFileInput.files = files;
+                rawFileName.textContent = `已选择: ${files[0].name}`;
+                rawFileName.style.display = 'block';
+            }
+        }
+
+        // 表单提交处理
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // 显示加载状态
+            submitBtn.disabled = true;
+            loadingSpinner.style.display = 'inline-block';
+            resultArea.style.display = 'none';
+            
+            try {
+                // 获取员工清单文件
+                const staffFileResponse = await fetch('员工清单.xlsx');
+                if (!staffFileResponse.ok) {
+                    throw new Error('无法加载员工清单文件，请确保"员工清单.xlsx"文件存在');
+                }
+                
+                const staffFileBlob = await staffFileResponse.blob();
+                const staffFile = new File([staffFileBlob], '员工清单.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                
+                // 创建FormData对象
+                const formData = new FormData();
+                formData.append('staff_file', staffFile);
+                formData.append('raw_file', rawFileInput.files[0]);
+                
+                // 调用API
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                // 处理响应
+                if (response.ok) {
+                    // 获取文件名（从响应头或默认值）
+                    const contentDisposition = response.headers.get('content-disposition');
+                    let filename = '工时统计结果.xlsx';
+                    
+                    if (contentDisposition && contentDisposition.includes('filename=')) {
+                        filename = contentDisposition.split('filename=')[1].replace(/"/g, '');
+                    }
+                    
+                    // 处理文件下载
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    
+                    downloadLink.href = url;
+                    downloadLink.download = filename;
+                    
+                    // 显示成功消息
+                    successMessage.style.display = 'block';
+                    errorMessage.style.display = 'none';
+                    resultArea.style.display = 'block';
+                } else {
+                    // 处理错误响应
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || '处理文件时发生错误');
+                }
+            } catch (error) {
+                // 显示错误消息
+                errorText.textContent = error.message;
+                errorMessage.style.display = 'flex';
+                successMessage.style.display = 'none';
+                resultArea.style.display = 'block';
+                console.error('Error:', error);
+            } finally {
+                // 恢复按钮状态
+                submitBtn.disabled = false;
+                loadingSpinner.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
