@@ -7,3 +7,4 @@ openpyxl==3.1.2
 # 处理文件上传的依赖（FastAPI 接收文件需此包）
 python-multipart==0.0.6
 # 正则表达式处理（用于文本标准化，Python 标准库已包含，无需额外安装）
+dingtalkchatbot==1.5.7      # 官方 SDK，已封装加签、@功能

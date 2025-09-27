@@ -1,3 +1,4 @@
+from dingtalk import send_dingtalk_warning
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -183,6 +184,25 @@ async def process_timesheet(
 
         # 保存新工作簿
         wb.save(output_path)
+
+
+# —————— 钉钉预警 ——————
+        warning_rows = []
+        for idx, (name, dept) in enumerate(staff, start=2):
+            rec = raw_data.get(str(name).strip(), {'工时': 0.0})
+            if rec['工时'] < 8:
+                # 从 staff 清单里再捞一次“主管”
+                leader = next((row[2] for row in ws_staff.iter_rows(min_row=2, values_only=True)
+                               if str(row[0]).strip() == str(name).strip()), None)
+                warning_rows.append({'name': name, 'hours': rec['工时'], 'leader': leader or ''})
+        if warning_rows:
+            try:
+                send_dingtalk_warning(warning_rows)
+            except Exception as e:
+                # 即使推送失败也不阻断主流程，只打日志
+                print("钉钉推送失败", e)
+                # alert("钉钉推送失败",e)
+        # —————— 钉钉预警结束 ——————
 
         # 返回生成的文件
         return FileResponse(

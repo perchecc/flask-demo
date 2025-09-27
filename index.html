@@ -417,7 +417,8 @@
 
     <script>
         // API地址 - 已设置为你的服务器地址
-        const API_URL = 'http://129.28.77.200:8888/process-timesheet';
+        // const API_URL = 'http://129.28.77.200:8888/process-timesheet';
+        const API_URL = 'https://api.toolplus.vip/fastapi/process-timesheet';
         
         // 获取DOM元素
         const uploadForm = document.getElementById('uploadForm');
@@ -512,32 +513,32 @@
                     body: formData
                 });
                 
-                // 处理响应
-                if (response.ok) {
-                    // 获取文件名（从响应头或默认值）
-                    const contentDisposition = response.headers.get('content-disposition');
-                    let filename = '工时统计结果.xlsx';
+                // // 处理响应
+                // if (response.ok) {
+                //     // 获取文件名（从响应头或默认值）
+                //     const contentDisposition = response.headers.get('content-disposition');
+                //     let filename = '工时统计结果.xlsx';
                     
-                    if (contentDisposition && contentDisposition.includes('filename=')) {
-                        filename = contentDisposition.split('filename=')[1].replace(/"/g, '');
-                    }
+                //     if (contentDisposition && contentDisposition.includes('filename=')) {
+                //         filename = contentDisposition.split('filename=')[1].replace(/"/g, '');
+                //     }
                     
-                    // 处理文件下载
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
+                //     // 处理文件下载
+                //     const blob = await response.blob();
+                //     const url = window.URL.createObjectURL(blob);
                     
-                    downloadLink.href = url;
-                    downloadLink.download = filename;
+                //     downloadLink.href = url;
+                //     downloadLink.download = filename;
                     
-                    // 显示成功消息
-                    successMessage.style.display = 'block';
-                    errorMessage.style.display = 'none';
-                    resultArea.style.display = 'block';
-                } else {
-                    // 处理错误响应
-                    const errorData = await response.json();
-                    throw new Error(errorData.detail || '处理文件时发生错误');
-                }
+                //     // 显示成功消息
+                //     successMessage.style.display = 'block';
+                //     errorMessage.style.display = 'none';
+                //     resultArea.style.display = 'block';
+                // } else {
+                //     // 处理错误响应
+                //     const errorData = await response.json();
+                //     throw new Error(errorData.detail || '处理文件时发生错误');
+                // }
             } catch (error) {
                 // 显示错误消息
                 errorText.textContent = error.message;

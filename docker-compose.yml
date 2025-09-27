@@ -7,3 +7,7 @@ services:
     ports:
       - "8000:8000"
     restart: unless-stopped
+    environment:
+      - DING_WEBHOOK=https://oapi.dingtalk.com/robot/send?access_token=cfb83e7c4cc55ee539ba709fbb675b8bf7fdfc023546f234cd9908adb86506b5
+      - DING_SECRET=SEC370679f4fa3ebf21f70b113625c23d2b9a69cbe0ecaba08bcbd9ed4c9eab68bb
+      - DING_PHONE_MAP={"蒋志远":"19919940941"}
